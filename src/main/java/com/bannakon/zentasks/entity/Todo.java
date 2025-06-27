@@ -15,6 +15,10 @@ public class Todo {
     private String title;
     private Boolean completed;
 
+    public Todo() {
+
+    }
+
     public Todo(Long id, String title, Boolean completed) {
         this.id = id;
         this.title = title;
@@ -29,6 +33,4 @@ public class Todo {
                 ", completed=" + completed +
                 '}';
     }
-
-
 }
