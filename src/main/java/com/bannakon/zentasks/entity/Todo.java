@@ -1,22 +1,23 @@
 package com.bannakon.zentasks.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.*; // JPA annotations
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-@Entity
+@Entity // Marks this class as a JPA entity
 @Table(name = "todos")
 public class Todo {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id // Marks 'id' as the primary key
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment ID
     private Long id;
     private String title;
     private Boolean completed;
 
     public Todo() {
-
+        // No-args constructor needed by JPA
     }
 
     public Todo(Long id, String title, Boolean completed) {
