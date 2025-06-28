@@ -14,13 +14,13 @@ public class Todo {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment ID
     private Long id;
     private String title;
-    private Boolean completed;
+    private boolean completed;
 
     public Todo() {
         // No-args constructor needed by JPA
     }
 
-    public Todo(Long id, String title, Boolean completed) {
+    public Todo(Long id, String title, boolean completed) {
         this.id = id;
         this.title = title;
         this.completed = completed;
