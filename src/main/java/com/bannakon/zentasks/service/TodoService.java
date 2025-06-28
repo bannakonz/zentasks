@@ -24,6 +24,7 @@ public class TodoService {
     }
 
     public Todo createDataTodo(Todo todo) {
+        log.info("createDataTodo: {}", todo);
         return todoRepository.save(todo);
     }
 }

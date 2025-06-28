@@ -27,7 +27,9 @@ public class TodoController {
     }
 
     @PostMapping
-    public Object createTodo(@RequestBody Todo newTodo) {
-        return todoService.createDataTodo(newTodo);
+    public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
+        Todo created = todoService.createDataTodo(newTodo);
+        return ResponseEntity.status(201).body(created);
+//        return todoService.createDataTodo(newTodo); // ส่งแบบนี้กลับเลยได้ไหม
     }
 }
