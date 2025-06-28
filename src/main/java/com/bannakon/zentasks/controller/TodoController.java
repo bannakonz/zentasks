@@ -32,4 +32,16 @@ public class TodoController {
         return ResponseEntity.status(201).body(created);
 //        return todoService.createDataTodo(newTodo); // ส่งแบบนี้กลับเลยได้ไหม
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @RequestBody Todo updateTodo) {
+        log.info("TodoController updateTodo with id: {} and data: {}", id, updateTodo);
+        return todoService.updateTodo(id, updateTodo).map((updatedTodo)-> {
+            log.info("Successfully updated todo in controller: {}", updatedTodo);
+            return ResponseEntity.ok(updatedTodo);
+        }).orElseGet(()->{
+            log.warn("Todo not found in controller with id: {}", id);
+            return ResponseEntity.notFound().build();
+        });
+    }
 }

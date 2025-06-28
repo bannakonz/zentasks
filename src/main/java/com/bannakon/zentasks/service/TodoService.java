@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -27,4 +28,22 @@ public class TodoService {
         log.info("createDataTodo: {}", todo);
         return todoRepository.save(todo);
     }
+
+    public Optional<Todo> updateTodo(Long id, Todo updateTodo) {
+        Optional<Todo> existingTodo =  todoRepository.findById(id);
+
+        if (existingTodo.isPresent()) {
+            Todo todo = existingTodo.get();
+            todo.setTitle(updateTodo.getTitle());
+            todo.setCompleted(updateTodo.isCompleted());
+
+            Todo saved = todoRepository.save(todo);
+            log.info("Successfully updated todo: {}", saved);
+            return Optional.of(saved);
+        } else {
+            log.warn("Todo not found with id: {}", id);
+            return Optional.empty();
+        }
+    }
+
 }
