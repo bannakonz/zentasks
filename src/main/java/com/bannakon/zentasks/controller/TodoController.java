@@ -10,10 +10,10 @@ import java.util.List;
 
 @Slf4j
 @RequestMapping("/api/todos")
-@RestController
-public class TodoController {
+@RestController // REST -> JSON , SOAP-> XML ,
+public class TodoController { // oauth2 , cache redis,
 
-    //    @Autowired // ถ้าใช้ field DI, ไม่ใส่ @Autowired, จะ error 500 NullPointerException, because "this.todoService" is null
+//        @Autowired // ถ้าใช้ field DI, ไม่ใส่ @Autowired, จะ error 500 NullPointerException, because "this.todoService" is null
     private final TodoService todoService;
 
     public TodoController(TodoService todoService) {
@@ -21,7 +21,7 @@ public class TodoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Todo>> getAllTodos() {
+    public ResponseEntity<List<Todo>> getAllTodos() { // จัดการ response http , response code
         log.info("TodoController getAllDataTodos: {}", todoService.getAllDataTodos());
         return ResponseEntity.ok(todoService.getAllDataTodos());
     }
@@ -52,3 +52,7 @@ public class TodoController {
         return ResponseEntity.noContent().build();
     }
 }
+// LAMBDA , stream,
+// SERVER, จัดการ,  THREAD, SECURITY
+
+// AUTHEn JWT

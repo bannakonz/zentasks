@@ -3,7 +3,7 @@ package com.bannakon.zentasks;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication // start project
 public class ZentasksApplication {
 
 	public static void main(String[] args) {

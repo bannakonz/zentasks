@@ -1,7 +1,7 @@
 package com.bannakon.zentasks.entity;
 
 import jakarta.persistence.*; // JPA annotations
-import lombok.Getter;
+import lombok.Getter; // lombox
 import lombok.Setter;
 
 @Setter
@@ -14,7 +14,7 @@ public class Todo {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment ID
     private Long id;
     private String title;
-    private boolean completed;
+    private boolean completed; // ไม่จำเป็นต้องครบตาม table DB
 
     public Todo() {
         // No-args constructor needed by JPA
