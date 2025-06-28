@@ -2,6 +2,7 @@ package com.bannakon.zentasks.controller;
 
 import com.bannakon.zentasks.entity.Todo;
 import com.bannakon.zentasks.service.TodoService;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,5 +44,12 @@ public class TodoController {
             log.warn("Todo not found in controller with id: {}", id);
             return ResponseEntity.notFound().build();
         });
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteTodo(@PathVariable Long id) {
+        log.info("Delete todo in controller with id: {}", id);
+        todoService.deleteTodo(id);
+        return ResponseEntity.noContent().build();
     }
 }

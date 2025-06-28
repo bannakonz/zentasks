@@ -46,4 +46,9 @@ public class TodoService {
         }
     }
 
+    public void deleteTodo(Long id) {
+        log.info("Requested delete todo with id: {}", id);
+        todoRepository.deleteById(id);
+    }
+
 }
