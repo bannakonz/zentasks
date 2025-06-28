@@ -22,4 +22,8 @@ public class TodoService {
         log.info("TodoService todoRepository findAll: {}", todoRepository.findAll());
         return todoRepository.findAll();
     }
+
+    public Todo createDataTodo(Todo todo) {
+        return todoRepository.save(todo);
+    }
 }

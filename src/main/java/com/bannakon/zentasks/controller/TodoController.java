@@ -4,9 +4,7 @@ import com.bannakon.zentasks.entity.Todo;
 import com.bannakon.zentasks.service.TodoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +24,10 @@ public class TodoController {
     public ResponseEntity<List<Todo>> getAllTodos() {
         log.info("TodoController getAllDataTodos: {}", todoService.getAllDataTodos());
         return ResponseEntity.ok(todoService.getAllDataTodos());
+    }
+
+    @PostMapping
+    public Object createTodo(@RequestBody Todo newTodo) {
+        return todoService.createDataTodo(newTodo);
     }
 }
