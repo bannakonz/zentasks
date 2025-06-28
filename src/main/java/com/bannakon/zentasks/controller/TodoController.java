@@ -2,7 +2,6 @@ package com.bannakon.zentasks.controller;
 
 import com.bannakon.zentasks.entity.Todo;
 import com.bannakon.zentasks.service.TodoService;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
