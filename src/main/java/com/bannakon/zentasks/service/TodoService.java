@@ -1,5 +1,6 @@
 package com.bannakon.zentasks.service;
 
+import com.bannakon.zentasks.dto.TodoRequest;
 import com.bannakon.zentasks.entity.Todo;
 import com.bannakon.zentasks.repository.TodoRepository;
 import org.springframework.stereotype.Service;
@@ -20,12 +21,13 @@ public class TodoService {
     }
 
     public List<Todo> getAllDataTodos() {
-        log.info("TodoService todoRepository findAll: {}", todoRepository.findAll());
         return todoRepository.findAll();
     }
 
-    public Todo createDataTodo(Todo todo) {
-        log.info("createDataTodo: {}", todo);
+    public Todo createDataTodo(TodoRequest todoRequest) {
+        Todo todo = new Todo();
+        todo.setTitle(todoRequest.getTitle());
+        todo.setCompleted(todoRequest.isCompleted());
         return todoRepository.save(todo);
     }
 
@@ -38,23 +40,18 @@ public class TodoService {
             todo.setCompleted(updateTodo.isCompleted());
 
             Todo saved = todoRepository.save(todo);
-            log.info("Successfully updated todo: {}", saved);
             return Optional.of(saved);
         } else {
-            log.warn("Todo not found with id: {}", id);
             return Optional.empty();
         }
     }
 
     public void deleteTodo(Long id) {
-        log.info("Requested delete todo with id: {}", id);
         todoRepository.deleteById(id);
     }
 
     public List<Todo> getTodosByCompletion(boolean completed) {
-        log.info("TodoService findByCompleted: {}", completed);
         List<Todo> todos =  todoRepository.findByCompleted(completed);
-        log.info("Found {} todos with completed status: {}", todos.size(), completed);
         return todos;
     }
 }

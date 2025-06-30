@@ -1,5 +1,7 @@
 package com.bannakon.zentasks.controller;
 
+import com.bannakon.zentasks.dto.TodoRequest;
+import com.bannakon.zentasks.dto.TodoResponse;
 import com.bannakon.zentasks.entity.Todo;
 import com.bannakon.zentasks.service.TodoService;
 import lombok.RequiredArgsConstructor;
@@ -20,31 +22,30 @@ public class TodoController {
     @GetMapping
     public ResponseEntity<List<Todo>> getAllTodos() {
         List<Todo> todos = todoService.getAllDataTodos();
-        log.info("TodoController getAllDataTodos: {}", todos);
         return ResponseEntity.ok(todos);
     }
 
     @PostMapping
-    public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
-        Todo created = todoService.createDataTodo(newTodo);
-        return ResponseEntity.status(201).body(created);
+    public ResponseEntity<TodoResponse> createTodo(@RequestBody TodoRequest request) {
+        Todo created =  todoService.createDataTodo(request);
+        TodoResponse todoResponse = new TodoResponse(
+                created.getId(),
+                created.getTitle(),
+                created.isCompleted()
+        );
+
+        return ResponseEntity.status(201).body(todoResponse);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @RequestBody Todo updateTodo) {
-        log.info("TodoController updateTodo with id: {} and data: {}", id, updateTodo);
-        return todoService.updateTodo(id, updateTodo).map((updatedTodo)-> {
-            log.info("Successfully updated todo in controller: {}", updatedTodo);
-            return ResponseEntity.ok(updatedTodo);
-        }).orElseGet(()->{
-            log.warn("Todo not found in controller with id: {}", id);
+        return todoService.updateTodo(id, updateTodo).map(ResponseEntity::ok).orElseGet(()->{
             return ResponseEntity.notFound().build();
         });
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTodo(@PathVariable Long id) {
-        log.info("Delete todo in controller with id: {}", id);
         todoService.deleteTodo(id);
         return ResponseEntity.noContent().build();
     }
