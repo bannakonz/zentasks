@@ -2,6 +2,7 @@ package com.bannakon.zentasks.controller;
 
 import com.bannakon.zentasks.entity.Todo;
 import com.bannakon.zentasks.service.TodoService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,16 +12,17 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/todos")
 @RestController
+@RequiredArgsConstructor // ใช้สำหรับ constructor filed ที่เป็น final
 public class TodoController {
 
-    //    @Autowired // ถ้าใช้ field DI, ไม่ใส่ @Autowired, จะ error 500 NullPointerException, because "this.todoService" is null
+//        @Autowired
+        // ถ้าใช้ field DI, ไม่ใส่ @Autowired, จะ error 500 NullPointerException, because "this.todoService" is null
     private final TodoService todoService;
+//    public TodoController(TodoService todoService) { // inject แบบ constructor
+//        this.todoService = todoService;
+//    }
 
-    public TodoController(TodoService todoService) {
-        this.todoService = todoService;
-    }
-
-    @GetMapping
+    @GetMapping// ใส่ value
     public ResponseEntity<List<Todo>> getAllTodos() {
         log.info("TodoController getAllDataTodos: {}", todoService.getAllDataTodos());
         return ResponseEntity.ok(todoService.getAllDataTodos());
