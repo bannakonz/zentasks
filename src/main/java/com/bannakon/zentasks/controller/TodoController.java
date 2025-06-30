@@ -4,6 +4,7 @@ import com.bannakon.zentasks.dto.TodoRequest;
 import com.bannakon.zentasks.dto.TodoResponse;
 import com.bannakon.zentasks.entity.Todo;
 import com.bannakon.zentasks.service.TodoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class TodoController {
     }
 
     @PostMapping
-    public ResponseEntity<TodoResponse> createTodo(@RequestBody TodoRequest request) {
+    public ResponseEntity<TodoResponse> createTodo(@Valid @RequestBody TodoRequest request) {
         Todo created =  todoService.createDataTodo(request);
         TodoResponse todoResponse = new TodoResponse(
                 created.getId(),
