@@ -12,27 +12,22 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/todos")
 @RestController
-@RequiredArgsConstructor // ใช้สำหรับ constructor filed ที่เป็น final
+@RequiredArgsConstructor // สร้าง constructor ที่รับ ค่าพารามิเตอร์สำหรับทุก final field และทุก field ที่ถูก @NonNull (ถ้ามี)
 public class TodoController {
 
-//        @Autowired
-        // ถ้าใช้ field DI, ไม่ใส่ @Autowired, จะ error 500 NullPointerException, because "this.todoService" is null
     private final TodoService todoService;
-//    public TodoController(TodoService todoService) { // inject แบบ constructor
-//        this.todoService = todoService;
-//    }
 
-    @GetMapping// ใส่ value
+    @GetMapping
     public ResponseEntity<List<Todo>> getAllTodos() {
-        log.info("TodoController getAllDataTodos: {}", todoService.getAllDataTodos());
-        return ResponseEntity.ok(todoService.getAllDataTodos());
+        List<Todo> todos = todoService.getAllDataTodos();
+        log.info("TodoController getAllDataTodos: {}", todos);
+        return ResponseEntity.ok(todos);
     }
 
     @PostMapping
     public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
         Todo created = todoService.createDataTodo(newTodo);
         return ResponseEntity.status(201).body(created);
-//        return todoService.createDataTodo(newTodo); // ส่งแบบนี้กลับเลยได้ไหม
     }
 
     @PutMapping("/{id}")
