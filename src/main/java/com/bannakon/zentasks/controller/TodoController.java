@@ -2,6 +2,7 @@ package com.bannakon.zentasks.controller;
 
 import com.bannakon.zentasks.dto.TodoRequest;
 import com.bannakon.zentasks.dto.TodoResponse;
+import com.bannakon.zentasks.dto.UpdateTodoRequest;
 import com.bannakon.zentasks.entity.Todo;
 import com.bannakon.zentasks.service.TodoService;
 import jakarta.validation.Valid;
@@ -39,10 +40,10 @@ public class TodoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @RequestBody Todo updateTodo) {
-        return todoService.updateTodo(id, updateTodo).map(ResponseEntity::ok).orElseGet(()->{
-            return ResponseEntity.notFound().build();
-        });
+    public ResponseEntity<TodoResponse> updateTodo(@PathVariable Long id, @RequestBody UpdateTodoRequest request) {
+        Todo updated = todoService.updateTodo(id, request);
+        TodoResponse response = new TodoResponse(updated.getId(), updated.getTitle(), updated.isCompleted());
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/{id}")

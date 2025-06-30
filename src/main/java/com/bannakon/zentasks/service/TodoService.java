@@ -1,13 +1,15 @@
 package com.bannakon.zentasks.service;
 
 import com.bannakon.zentasks.dto.TodoRequest;
+import com.bannakon.zentasks.dto.UpdateTodoRequest;
 import com.bannakon.zentasks.entity.Todo;
 import com.bannakon.zentasks.repository.TodoRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -31,19 +33,18 @@ public class TodoService {
         return todoRepository.save(todo);
     }
 
-    public Optional<Todo> updateTodo(Long id, Todo updateTodo) {
-        Optional<Todo> existingTodo =  todoRepository.findById(id);
-
-        if (existingTodo.isPresent()) {
-            Todo todo = existingTodo.get();
-            todo.setTitle(updateTodo.getTitle());
-            todo.setCompleted(updateTodo.isCompleted());
-
-            Todo saved = todoRepository.save(todo);
-            return Optional.of(saved);
-        } else {
-            return Optional.empty();
+    public Todo updateTodo(Long id, UpdateTodoRequest request) {
+        Todo todo = todoRepository.findById(id).orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Todo not found with id: " + id
+        ));
+        if (request.getTitle() != null) {
+            todo.setTitle(request.getTitle());
         }
+        if (request.getCompleted() != null) {
+            todo.setCompleted(request.getCompleted());
+        }
+        return todoRepository.save(todo);
     }
 
     public void deleteTodo(Long id) {
