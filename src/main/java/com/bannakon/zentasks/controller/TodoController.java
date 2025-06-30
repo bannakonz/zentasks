@@ -51,4 +51,10 @@ public class TodoController {
         todoService.deleteTodo(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping(params = "completed")
+    public ResponseEntity<List<Todo>> getTodoByCompleted(@RequestParam boolean completed) {
+        List<Todo> filteredTodo =  todoService.getTodosByCompletion(completed);
+        return ResponseEntity.ok().body(filteredTodo);
+    }
 }

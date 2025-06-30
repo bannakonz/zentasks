@@ -51,4 +51,10 @@ public class TodoService {
         todoRepository.deleteById(id);
     }
 
+    public List<Todo> getTodosByCompletion(boolean completed) {
+        log.info("TodoService findByCompleted: {}", completed);
+        List<Todo> todos =  todoRepository.findByCompleted(completed);
+        log.info("Found {} todos with completed status: {}", todos.size(), completed);
+        return todos;
+    }
 }
