@@ -22,8 +22,16 @@ public class TodoController {
     private final TodoService todoService;
 
     @GetMapping
-    public ResponseEntity<List<Todo>> getAllTodos() {
-        List<Todo> todos = todoService.getAllDataTodos();
+    public ResponseEntity<List<TodoResponse>> getAllTodos() {
+        List<TodoResponse> todos = todoService.getAllDataTodos()
+                .stream()
+                .map(todo-> new TodoResponse(
+                        todo.getId(),
+                        todo.getTitle(),
+                        todo.isCompleted()
+                ))
+                .toList();
+
         return ResponseEntity.ok(todos);
     }
 
@@ -53,8 +61,12 @@ public class TodoController {
     }
 
     @GetMapping(params = "completed")
-    public ResponseEntity<List<Todo>> getTodoByCompleted(@RequestParam boolean completed) {
-        List<Todo> filteredTodo =  todoService.getTodosByCompletion(completed);
-        return ResponseEntity.ok().body(filteredTodo);
+    public ResponseEntity<List<TodoResponse>> getTodoByCompleted(@RequestParam boolean completed) {
+        List<TodoResponse> todos = todoService.getTodosByCompletion(completed)
+                .stream()
+                .map(todo -> new TodoResponse(todo.getId(), todo.getTitle(), todo.isCompleted()))
+                .toList();
+
+        return ResponseEntity.ok().body(todos);
     }
 }
