@@ -15,7 +15,6 @@ import java.util.List;
 @Service
 public class TodoService {
 
-//    @Autowired // ถ้าใช้ field DI, ไม่ใส่ @Autowired, จะ error 500 NullPointerException, because "this.todoRepository" is null
     private final TodoRepository todoRepository;
 
     public TodoService(TodoRepository todoRepository) {
