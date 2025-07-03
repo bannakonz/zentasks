@@ -1,7 +1,12 @@
 package com.bannakon.zentasks.controller;
 
+import com.bannakon.zentasks.dto.TodoRequest;
+import com.bannakon.zentasks.dto.TodoResponse;
+import com.bannakon.zentasks.dto.UpdateTodoRequest;
 import com.bannakon.zentasks.entity.Todo;
 import com.bannakon.zentasks.service.TodoService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,44 +16,57 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/todos")
 @RestController
+@RequiredArgsConstructor // สร้าง constructor ที่รับ ค่าพารามิเตอร์สำหรับทุก final field และทุก field ที่ถูก @NonNull (ถ้ามี)
 public class TodoController {
 
-    //    @Autowired // ถ้าใช้ field DI, ไม่ใส่ @Autowired, จะ error 500 NullPointerException, because "this.todoService" is null
     private final TodoService todoService;
 
-    public TodoController(TodoService todoService) {
-        this.todoService = todoService;
-    }
-
     @GetMapping
-    public ResponseEntity<List<Todo>> getAllTodos() {
-        log.info("TodoController getAllDataTodos: {}", todoService.getAllDataTodos());
-        return ResponseEntity.ok(todoService.getAllDataTodos());
+    public ResponseEntity<List<TodoResponse>> getAllTodos() {
+        List<TodoResponse> todos = todoService.getAllDataTodos()
+                .stream()
+                .map(todo-> new TodoResponse(
+                        todo.getId(),
+                        todo.getTitle(),
+                        todo.isCompleted()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(todos);
     }
 
     @PostMapping
-    public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
-        Todo created = todoService.createDataTodo(newTodo);
-        return ResponseEntity.status(201).body(created);
-//        return todoService.createDataTodo(newTodo); // ส่งแบบนี้กลับเลยได้ไหม
+    public ResponseEntity<TodoResponse> createTodo(@Valid @RequestBody TodoRequest request) {
+        Todo created =  todoService.createDataTodo(request);
+        TodoResponse todoResponse = new TodoResponse(
+                created.getId(),
+                created.getTitle(),
+                created.isCompleted()
+        );
+
+        return ResponseEntity.status(201).body(todoResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @RequestBody Todo updateTodo) {
-        log.info("TodoController updateTodo with id: {} and data: {}", id, updateTodo);
-        return todoService.updateTodo(id, updateTodo).map((updatedTodo)-> {
-            log.info("Successfully updated todo in controller: {}", updatedTodo);
-            return ResponseEntity.ok(updatedTodo);
-        }).orElseGet(()->{
-            log.warn("Todo not found in controller with id: {}", id);
-            return ResponseEntity.notFound().build();
-        });
+    public ResponseEntity<TodoResponse> updateTodo(@PathVariable Long id, @RequestBody UpdateTodoRequest request) {
+        Todo updated = todoService.updateTodo(id, request);
+        TodoResponse response = new TodoResponse(updated.getId(), updated.getTitle(), updated.isCompleted());
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTodo(@PathVariable Long id) {
-        log.info("Delete todo in controller with id: {}", id);
         todoService.deleteTodo(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(params = "completed")
+    public ResponseEntity<List<TodoResponse>> getTodoByCompleted(@RequestParam boolean completed) {
+        List<TodoResponse> todos = todoService.getTodosByCompletion(completed)
+                .stream()
+                .map(todo -> new TodoResponse(todo.getId(), todo.getTitle(), todo.isCompleted()))
+                .toList();
+
+        return ResponseEntity.ok().body(todos);
     }
 }
