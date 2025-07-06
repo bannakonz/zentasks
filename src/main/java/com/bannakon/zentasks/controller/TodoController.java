@@ -28,7 +28,9 @@ public class TodoController {
                 .map(todo-> new TodoResponse(
                         todo.getId(),
                         todo.getTitle(),
-                        todo.isCompleted()
+                        todo.isCompleted(),
+                        todo.getCreatedAt(),
+                        todo.getUpdatedAt()
                 ))
                 .toList();
 
@@ -41,7 +43,9 @@ public class TodoController {
         TodoResponse todoResponse = new TodoResponse(
                 created.getId(),
                 created.getTitle(),
-                created.isCompleted()
+                created.isCompleted(),
+                created.getCreatedAt(),
+                created.getUpdatedAt()
         );
 
         return ResponseEntity.status(201).body(todoResponse);
@@ -50,7 +54,7 @@ public class TodoController {
     @PutMapping("/{id}")
     public ResponseEntity<TodoResponse> updateTodo(@PathVariable Long id, @RequestBody UpdateTodoRequest request) {
         Todo updated = todoService.updateTodo(id, request);
-        TodoResponse response = new TodoResponse(updated.getId(), updated.getTitle(), updated.isCompleted());
+        TodoResponse response = new TodoResponse(updated.getId(), updated.getTitle(), updated.isCompleted(), updated.getCreatedAt(), updated.getUpdatedAt());
         return ResponseEntity.ok().body(response);
     }
 
@@ -64,7 +68,7 @@ public class TodoController {
     public ResponseEntity<List<TodoResponse>> getTodoByCompleted(@RequestParam boolean completed) {
         List<TodoResponse> todos = todoService.getTodosByCompletion(completed)
                 .stream()
-                .map(todo -> new TodoResponse(todo.getId(), todo.getTitle(), todo.isCompleted()))
+                .map(todo -> new TodoResponse(todo.getId(), todo.getTitle(), todo.isCompleted(), todo.getCreatedAt(), todo.getCreatedAt()))
                 .toList();
 
         return ResponseEntity.ok().body(todos);

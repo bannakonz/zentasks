@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -29,6 +30,10 @@ public class TodoService {
         Todo todo = new Todo();
         todo.setTitle(todoRequest.getTitle());
         todo.setCompleted(todoRequest.isCompleted());
+
+        LocalDateTime now = LocalDateTime.now();
+        todo.setCreatedAt(now);
+        todo.setUpdatedAt(now);
         return todoRepository.save(todo);
     }
 
@@ -43,6 +48,9 @@ public class TodoService {
         if (request.getCompleted() != null) {
             todo.setCompleted(request.getCompleted());
         }
+
+        todo.setUpdatedAt(LocalDateTime.now());
+
         return todoRepository.save(todo);
     }
 

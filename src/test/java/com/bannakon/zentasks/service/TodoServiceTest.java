@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +33,10 @@ class TodoServiceTest {
     @Test
     void shouldGetAllTodos() {
         // Arrange
-        Todo todo1 = new Todo(1L, "Task 1", false);
-        Todo todo2 = new Todo(1L, "Task 2", false);
+        LocalDateTime now = LocalDateTime.now();
+
+        Todo todo1 = new Todo(1L, "Task 1", false, now, now);
+        Todo todo2 = new Todo(2L, "Task 2", false, now, now);
         when(todoRepository.findAll()).thenReturn(Arrays.asList(todo1, todo2));
 //        when(...).thenReturn(...) = ถ้าเรียก ... ให้ตอบ ...
 
@@ -42,16 +45,20 @@ class TodoServiceTest {
 
         // Assert
         assertThat(todos).hasSize(2);
+        assertThat(todos.get(0).getTitle()).isEqualTo("Task 1");
+        assertThat(todos.get(1).getTitle()).isEqualTo("Task 2");
         verify(todoRepository, times(1)).findAll();
     }
 
     @Test
     void shouldCreateTodo() {
         TodoRequest request = new TodoRequest();
-        request.setTitle("New Task");
-        request.setCompleted(false);
 
-        Todo saved = new Todo(1L, "New Task", false);
+        request.setTitle("New Task");
+        request.setCompleted(true);
+
+        LocalDateTime now = LocalDateTime.now();
+        Todo saved = new Todo(1L, "New Task", true, now, now);
         when(todoRepository.save(any(Todo.class))).thenReturn(saved);
 
         // Act
@@ -60,14 +67,20 @@ class TodoServiceTest {
         // Asset
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getTitle()).isEqualTo("New Task");
+        assertThat(result.isCompleted()).isTrue();
+        assertThat(result.getCreatedAt()).isNotNull();
+        assertThat(result.getUpdatedAt()).isNotNull();
+        assertThat(result.getCreatedAt()).isEqualTo(result.getUpdatedAt());
         verify(todoRepository, times(1)).save(any(Todo.class));
     }
 
     @Test
     void shouldUpdateTodo() {
         // Arrange
-        Todo existing = new Todo(1L, "Old", false);
-        UpdateTodoRequest update = new  UpdateTodoRequest();
+        LocalDateTime createdTime = LocalDateTime.now().minusDays(1);
+        Todo existing = new Todo(1L, "Old", false, createdTime, createdTime);
+
+        UpdateTodoRequest update = new UpdateTodoRequest();
         update.setTitle("Task Updated");
         update.setCompleted(true);
 
@@ -80,8 +93,58 @@ class TodoServiceTest {
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getTitle()).isEqualTo("Task Updated");
         assertThat(result.isCompleted()).isTrue();
+
+        // getUpdatedAt ควรใหม่กว่า getUpdatedAt
+        assertThat(result.getCreatedAt()).isEqualTo(createdTime);
+        assertThat(result.getUpdatedAt()).isAfter(createdTime);
+
+        verify(todoRepository).findById(1L);
         verify(todoRepository).save(existing);
 
+    }
+
+    @Test
+    void shouldUpdateOnlyTitle() {
+        // Arrange
+        LocalDateTime createdTime = LocalDateTime.now().minusDays(1);
+        Todo existing = new Todo(1L, "Old Task", false, createdTime, createdTime);
+
+        UpdateTodoRequest update = new UpdateTodoRequest();
+        update.setTitle("Updated Title Only");
+        // completed is null, should not change
+
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(todoRepository.save(any(Todo.class))).thenReturn(existing);
+
+        // Act
+        todoService.updateTodo(1L, update);
+
+        // Assert
+        assertThat(existing.getTitle()).isEqualTo("Updated Title Only");
+        assertThat(existing.isCompleted()).isFalse(); // Should remain unchanged
+        assertThat(existing.getUpdatedAt()).isAfter(createdTime);
+    }
+
+    @Test
+    void shouldUpdateOnlyCompleted() {
+        // Arrange
+        LocalDateTime createdTime = LocalDateTime.now().minusDays(1);
+        Todo existing = new Todo(1L, "Original Title", false, createdTime, createdTime);
+
+        UpdateTodoRequest update = new UpdateTodoRequest();
+        update.setCompleted(true);
+        // title is null, should not change
+
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(todoRepository.save(any(Todo.class))).thenReturn(existing);
+
+        // Act
+        todoService.updateTodo(1L, update);
+
+        // Assert
+        assertThat(existing.getTitle()).isEqualTo("Original Title"); // Should remain unchanged
+        assertThat(existing.isCompleted()).isTrue();
+        assertThat(existing.getUpdatedAt()).isAfter(createdTime);
     }
 
     @Test
@@ -91,9 +154,12 @@ class TodoServiceTest {
         when(todoRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Assert
-        assertThatThrownBy(()-> todoService.updateTodo(99L, update))
+        assertThatThrownBy(() -> todoService.updateTodo(99L, update))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("Todo not found");
+
+        verify(todoRepository).findById(99L);
+        verify(todoRepository, never()).save(any(Todo.class));
     }
 
     @Test
@@ -108,15 +174,32 @@ class TodoServiceTest {
     @Test
     void shouldGetTodosByCompletion() {
         // Arrange
-        Todo todo = new Todo(1L, "Task", true);
-        when(todoRepository.findByCompleted(true)).thenReturn(List.of(todo));
+        LocalDateTime now = LocalDateTime.now();
+        Todo completedTodo = new Todo(1L, "Completed Task", true, now, now);
+        when(todoRepository.findByCompleted(true)).thenReturn(List.of(completedTodo));
 
         // Act
         List<Todo> todos = todoService.getTodosByCompletion(true);
 
         // Asset
         assertThat(todos).hasSize(1);
+        assertThat(todos.get(0).getTitle()).isEqualTo("Completed Task");
         assertThat(todos.get(0).isCompleted()).isTrue();
+
+        verify(todoRepository).findByCompleted(true);
+    }
+
+    @Test
+    void shouldGetTodosByCompletionReturnEmpty() {
+        // Arrange
+        when(todoRepository.findByCompleted(false)).thenReturn(List.of());
+
+        // Act
+        List<Todo> todos = todoService.getTodosByCompletion(false);
+
+        // Assert
+        assertThat(todos).isEmpty();
+        verify(todoRepository).findByCompleted(false);
     }
 
 }

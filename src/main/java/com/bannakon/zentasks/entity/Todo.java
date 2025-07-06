@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Setter
 @Getter
 @Entity // Marks this class as a JPA entity
@@ -19,6 +21,8 @@ public class Todo {
     private Long id;
     private String title;
     private boolean completed;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @Override
     public String toString() {
@@ -26,6 +30,8 @@ public class Todo {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", completed=" + completed +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }
