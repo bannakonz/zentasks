@@ -64,11 +64,12 @@ public class TodoController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping(params = "completed")
+
+    @GetMapping(value = "/filter", params = "completed")
     public ResponseEntity<List<TodoResponse>> getTodoByCompleted(@RequestParam boolean completed) {
         List<TodoResponse> todos = todoService.getTodosByCompletion(completed)
                 .stream()
-                .map(todo -> new TodoResponse(todo.getId(), todo.getTitle(), todo.isCompleted(), todo.getCreatedAt(), todo.getCreatedAt()))
+                .map(todo -> new TodoResponse(todo.getId(), todo.getTitle(), todo.isCompleted(), todo.getCreatedAt(), todo.getUpdatedAt()))
                 .toList();
 
         return ResponseEntity.ok().body(todos);
