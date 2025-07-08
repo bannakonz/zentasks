@@ -8,6 +8,7 @@ public class ZentasksApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ZentasksApplication.class, args);
+		System.out.println("Welcome to, My ZentasksApplication");
 	}
 
 }
