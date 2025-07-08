@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Ignore local Spring Boot dev config
+/src/main/resources/application-dev.properties
