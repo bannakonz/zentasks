@@ -166,7 +166,7 @@ class TodoControllerTest {
         when(todoService.getTodosByCompletion(true)).thenReturn(List.of(completedTodo));
 
         // Act & Assert
-        mockMvc.perform(get("/api/todos?completed=true"))
+        mockMvc.perform(get("/api/todos/filter?completed=true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(1))

@@ -55,6 +55,10 @@ public class TodoService {
     }
 
     public void deleteTodo(Long id) {
+        // validate เฉพาะ business logic,  ไม่ใช่ input format
+        if (!todoRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,  "Todo not found with id: " + id);
+        }
         todoRepository.deleteById(id);
     }
 
