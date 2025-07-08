@@ -164,10 +164,14 @@ class TodoServiceTest {
 
     @Test
     void shouldDeleteTodo() {
+        // Arrange
+        when(todoRepository.existsById(1L)).thenReturn(true); // ตั้งเงื่อนไขจำลอง: ถ้าเรียกแบบนี้ → ให้ตอบแบบนี้!
+
         // Act
         todoService.deleteTodo(1L);
 
         // Asset
+        verify(todoRepository).existsById(1L);  // ควรตรวจด้วย
         verify(todoRepository).deleteById(1L);
     }
 
