@@ -1,5 +1,7 @@
 package com.bannakon.zentasks.service;
 
+import com.bannakon.zentasks.dto.LoginRequest;
+import com.bannakon.zentasks.dto.LoginResponse;
 import com.bannakon.zentasks.dto.RegisterRequest;
 import com.bannakon.zentasks.dto.RegisterResponse;
 import com.bannakon.zentasks.entity.User;
@@ -30,5 +32,17 @@ public class AuthService {
         userRepository.save(user);
 
         return new RegisterResponse("Register is successfully") ;
+    }
+
+    public LoginResponse login(LoginRequest loginRequest) {
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Credential"));
+
+        if (!user.getPassword().equals(loginRequest.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credential");
+        }
+
+        return new LoginResponse("Login successfully");
+
     }
 }

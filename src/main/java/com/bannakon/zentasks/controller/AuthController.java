@@ -1,6 +1,8 @@
 package com.bannakon.zentasks.controller;
 
 
+import com.bannakon.zentasks.dto.LoginRequest;
+import com.bannakon.zentasks.dto.LoginResponse;
 import com.bannakon.zentasks.dto.RegisterRequest;
 import com.bannakon.zentasks.dto.RegisterResponse;
 import com.bannakon.zentasks.service.AuthService;
@@ -29,6 +31,10 @@ public class AuthController {
         return ResponseEntity.ok().body(authService.createUser(registerRequest));
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok().body(authService.login(loginRequest));
+    }
 
 
 }
