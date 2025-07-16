@@ -12,9 +12,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository, JwtService jwtService) {
         this.userRepository = userRepository;
+        this.jwtService = jwtService;
     }
 
     public RegisterResponse createUser(RegisterRequest registerRequest) {
@@ -38,8 +40,9 @@ public class AuthService {
         if (!user.getPassword().equals(loginRequest.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credential");
         }
+        String token = jwtService.generateToken(user.getEmail());
 
-        return new LoginResponse("Login successfully");
+        return new LoginResponse("Login successfully", token);
 
     }
 
