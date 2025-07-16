@@ -41,8 +41,9 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credential");
         }
         String token = jwtService.generateToken(user.getEmail());
+        Long expiration = jwtService.getExpirationMs() / 1000;
 
-        return new LoginResponse("Login successfully", token);
+        return new LoginResponse("Login successfully", token, expiration);
 
     }
 

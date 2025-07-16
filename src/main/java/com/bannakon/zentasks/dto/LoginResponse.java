@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoginResponse {
 //    private String refreshToken;
-//    private Long expiration;
     private String message;
     private String accessToken;
+    private Long expiration;
 
 }
