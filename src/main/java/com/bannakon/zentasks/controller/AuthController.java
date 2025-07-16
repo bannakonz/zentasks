@@ -3,24 +3,24 @@ package com.bannakon.zentasks.controller;
 
 import com.bannakon.zentasks.dto.*;
 import com.bannakon.zentasks.service.AuthService;
+import com.bannakon.zentasks.service.JwtService;
 import jakarta.validation.Valid;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RequestMapping("api/auth")
 @RestController
-@NoArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
-    public AuthController(AuthService authService) {
+    private final AuthService authService;
+    private final JwtService jwtService;
+    public AuthController(
+            AuthService authService,
+            JwtService jwtService) {
         this.authService = authService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")
@@ -34,8 +34,16 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody LogoutRequest logoutRequest) {
-        return ResponseEntity.ok().body(authService.logout(logoutRequest));
+    public ResponseEntity<?> logout(
+            @RequestHeader("Authorization") String authHeader,
+            @Valid @RequestBody LogoutRequest logoutRequest
+    ) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ") ) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
+        }
+        String accessToken = authHeader.substring(7);
+        String email = jwtService.extractEmail(accessToken);
+        return ResponseEntity.ok().body(authService.logout(email, logoutRequest.getRefreshToken()));
     }
 
 

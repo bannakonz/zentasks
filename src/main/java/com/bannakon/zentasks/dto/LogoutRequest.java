@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class LogoutRequest {
     @NotBlank
-    private String email;
+    private String refreshToken;
 }

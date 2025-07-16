@@ -3,6 +3,7 @@ package com.bannakon.zentasks.service;
 import com.bannakon.zentasks.dto.*;
 import com.bannakon.zentasks.entity.RefreshToken;
 import com.bannakon.zentasks.entity.User;
+import com.bannakon.zentasks.repository.RefreshTokenRepository;
 import com.bannakon.zentasks.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,15 +16,18 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public AuthService(
             UserRepository userRepository,
             JwtService jwtService,
-            RefreshTokenService refreshTokenService
+            RefreshTokenService refreshTokenService,
+            RefreshTokenRepository refreshTokenRepository
     ) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     public RegisterResponse createUser(RegisterRequest registerRequest) {
@@ -55,9 +59,19 @@ public class AuthService {
 
     }
 
-    public LogoutResponse logout(LogoutRequest logoutRequest) {
-        userRepository.findByEmail(logoutRequest.getEmail()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    public LogoutResponse logout(String email, String refreshToken) {
+        User user = userRepository
+                .findByEmail(email)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        return new LogoutResponse("Logout successfully");
+        RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Refresh token not found"));
+
+        if (!token.getUser().getEmail().equals(email)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token does not belong to authenticated user");
+        }
+
+        refreshTokenRepository.delete(token);
+        return new LogoutResponse("Logout successful");
     }
 }
