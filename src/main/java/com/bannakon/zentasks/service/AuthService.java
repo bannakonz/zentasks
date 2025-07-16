@@ -1,6 +1,7 @@
 package com.bannakon.zentasks.service;
 
 import com.bannakon.zentasks.dto.*;
+import com.bannakon.zentasks.entity.RefreshToken;
 import com.bannakon.zentasks.entity.User;
 import com.bannakon.zentasks.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -13,10 +14,16 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
-    public AuthService(UserRepository userRepository, JwtService jwtService) {
+    public AuthService(
+            UserRepository userRepository,
+            JwtService jwtService,
+            RefreshTokenService refreshTokenService
+    ) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public RegisterResponse createUser(RegisterRequest registerRequest) {
@@ -41,9 +48,10 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credential");
         }
         String token = jwtService.generateToken(user.getEmail());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getEmail());
         Long expiration = jwtService.getExpirationMs() / 1000;
 
-        return new LoginResponse("Login successfully", token, expiration);
+        return new LoginResponse("Login successfully", token, refreshToken.getToken(), expiration);
 
     }
 
