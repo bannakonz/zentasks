@@ -1,10 +1,7 @@
 package com.bannakon.zentasks.controller;
 
 
-import com.bannakon.zentasks.dto.LoginRequest;
-import com.bannakon.zentasks.dto.LoginResponse;
-import com.bannakon.zentasks.dto.RegisterRequest;
-import com.bannakon.zentasks.dto.RegisterResponse;
+import com.bannakon.zentasks.dto.*;
 import com.bannakon.zentasks.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.NoArgsConstructor;
@@ -34,6 +31,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok().body(authService.login(loginRequest));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody LogoutRequest logoutRequest) {
+        return ResponseEntity.ok().body(authService.logout(logoutRequest));
     }
 
 

@@ -1,9 +1,6 @@
 package com.bannakon.zentasks.service;
 
-import com.bannakon.zentasks.dto.LoginRequest;
-import com.bannakon.zentasks.dto.LoginResponse;
-import com.bannakon.zentasks.dto.RegisterRequest;
-import com.bannakon.zentasks.dto.RegisterResponse;
+import com.bannakon.zentasks.dto.*;
 import com.bannakon.zentasks.entity.User;
 import com.bannakon.zentasks.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -44,5 +41,11 @@ public class AuthService {
 
         return new LoginResponse("Login successfully");
 
+    }
+
+    public LogoutResponse logout(LogoutRequest logoutRequest) {
+        userRepository.findByEmail(logoutRequest.getEmail()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        return new LogoutResponse("Logout successfully");
     }
 }
