@@ -24,6 +24,10 @@ public class Todo {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Override
     public String toString() {
         return "Todo{" +
@@ -32,6 +36,7 @@ public class Todo {
                 ", completed=" + completed +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", user=" + user +
                 '}';
     }
 }
