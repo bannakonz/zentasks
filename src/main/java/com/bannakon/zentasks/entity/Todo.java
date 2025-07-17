@@ -10,19 +10,23 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
-@Entity // Marks this class as a JPA entity
-@Table(name = "todos")
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "todos")
 public class Todo {
 
-    @Id // Marks 'id' as the primary key
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment ID
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private boolean completed;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Override
     public String toString() {
@@ -32,6 +36,7 @@ public class Todo {
                 ", completed=" + completed +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", user=" + user +
                 '}';
     }
 }
